@@ -8,6 +8,10 @@ param resourceName string
 param virtualNetworkName string
 param postgresSubnetName string
 param privateDnsZoneResourceId string
+@secure()
+param administratorUsername string
+@secure()
+param administratorPassword string
 
 resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-preview' = {
   name: resourceName
@@ -18,10 +22,11 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-
   }
   properties: {
     version: '15'
-    administratorLogin: 'psqladmin'
+    administratorLogin: administratorUsername
+    administratorLoginPassword: administratorPassword
     authConfig: {
-      activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Disabled'
+      activeDirectoryAuth: 'Disabled'
+      passwordAuth: 'Enabled'
       tenantId: tenant().tenantId
     }
     network: {
