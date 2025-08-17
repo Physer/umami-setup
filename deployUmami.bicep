@@ -3,6 +3,11 @@ targetScope = 'subscription'
 param location string = deployment().location
 param environment string = 'local'
 
+@secure()
+param databaseUsername string
+@secure()
+param databasePassword string
+
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: 'rg-schouls-umami-${environment}'
   location: location
@@ -19,5 +24,28 @@ module appService './modules/appservice.bicep' = {
   params: {
     virtualNetworkName: virtualNetwork.outputs.resourceName
     subnetName: virtualNetwork.outputs.appServiceSubnetName
+  }
+}
+
+var databaseResourceName = 'psql-schouls-umami-${uniqueString(subscription().id)}'
+
+module privateDns 'modules/privatedns.bicep' = {
+  name: 'deployPrivateDns'
+  scope: resourceGroup
+  params: {
+    postgresDatabaseResouceName: databaseResourceName
+  }
+}
+
+module postgresDatabase 'modules/postgres.bicep' = {
+  name: 'deployPostgresDatabase'
+  scope: resourceGroup
+  params: {
+    resourceName: databaseResourceName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
+    postgresSubnetName: virtualNetwork.outputs.postgresSubnetName
+    privateDnsZoneResourceId: privateDns.outputs.resourceId
+    administratorUsername: databaseUsername
+    administratorPassword: databasePassword
   }
 }
