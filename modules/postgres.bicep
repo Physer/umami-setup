@@ -8,12 +8,13 @@ param resourceName string
 param virtualNetworkName string
 param postgresSubnetName string
 param privateDnsZoneResourceId string
+param databaseName string
 @secure()
 param administratorUsername string
 @secure()
 param administratorPassword string
 
-resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-preview' = {
+resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-preview' = {
   name: resourceName
   location: location
   sku: {
@@ -51,3 +52,10 @@ resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-
     }
   }
 }
+
+resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2025-01-01-preview' = {
+  parent: postgresServer
+  name: databaseName
+}
+
+output serverFqdn string = postgresServer.properties.fullyQualifiedDomainName

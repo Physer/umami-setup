@@ -7,6 +7,11 @@ param environment string = 'local'
 param databaseUsername string
 @secure()
 param databasePassword string
+@secure()
+param appSecret string
+
+var databaseResourceName = 'psql-schouls-umami-${uniqueString(subscription().id)}'
+var databaseName = 'umami'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: 'rg-schouls-umami-${environment}'
@@ -17,18 +22,6 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
   name: 'deployVirtualNetwork'
   scope: resourceGroup
 }
-
-module appService './modules/appservice.bicep' = {
-  name: 'deployAppService'
-  scope: resourceGroup
-  params: {
-    virtualNetworkName: virtualNetwork.outputs.resourceName
-    subnetName: virtualNetwork.outputs.appServiceSubnetName
-  }
-}
-
-var databaseResourceName = 'psql-schouls-umami-${uniqueString(subscription().id)}'
-
 module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
   scope: resourceGroup
@@ -47,5 +40,17 @@ module postgresDatabase 'modules/postgres.bicep' = {
     privateDnsZoneResourceId: privateDns.outputs.resourceId
     administratorUsername: databaseUsername
     administratorPassword: databasePassword
+    databaseName: databaseName
+  }
+}
+
+module appService './modules/appservice.bicep' = {
+  name: 'deployAppService'
+  scope: resourceGroup
+  params: {
+    virtualNetworkName: virtualNetwork.outputs.resourceName
+    subnetName: virtualNetwork.outputs.appServiceSubnetName
+    appSecret: appSecret
+    databaseConnectionString: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
   }
 }

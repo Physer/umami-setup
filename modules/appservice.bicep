@@ -2,8 +2,16 @@ param location string = resourceGroup().location
 param skuSize string = 'B1'
 param skuTier string = 'Basic'
 param skuFamily string = 'B'
+
 param virtualNetworkName string
 param subnetName string
+@secure()
+param appSecret string
+@secure()
+param databaseConnectionString string
+
+var imageName = 'ghcr.io/umami-software/umami'
+var imageTag = 'postgresql-latest'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
   name: 'plan-schouls-umami-${uniqueString(resourceGroup().id)}'
@@ -35,15 +43,28 @@ resource appService 'Microsoft.Web/sites@2024-11-01' = {
     }
     reserved: true
     siteConfig: {
+      appSettings: [
+        {
+          name: 'DATABASE_TYPE'
+          value: 'postgresql'
+        }
+        {
+          name: 'DATABASE_URL'
+          value: databaseConnectionString
+        }
+        {
+          name: 'APP_SECRET'
+          value: appSecret
+        }
+      ]
       alwaysOn: true
       http20Enabled: true
-      linuxFxVersion: 'NODE|22-lts'
-      nodeVersion: '22-lts'
+      linuxFxVersion: 'DOCKER|${imageName}:${imageTag}'
       publicNetworkAccess: publicNetworkAccess
       vnetName: virtualNetworkName
       vnetRouteAllEnabled: true
     }
     virtualNetworkSubnetId: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
   }
-  kind: 'app,linux'
+  kind: 'app,linux,container'
 }
