@@ -1,8 +1,7 @@
 targetScope = 'subscription'
 
 param location string = deployment().location
-param environment string = 'local'
-
+param environment string
 @secure()
 param databaseUsername string
 @secure()
@@ -53,12 +52,20 @@ module postgresDatabase 'modules/postgres.bicep' = {
   }
 }
 
-module containerApp 'modules/containerApp.bicep' = {
-  name: 'deployContainerApp'
+module containerAppEnvironment 'modules/containerAppEnvironment.bicep' = {
+  name: 'deployContainerAppEnvironment'
   scope: resourceGroup
   params: {
     virtualNetworkName: virtualNetwork.outputs.resourceName
     containerSubnetName: virtualNetwork.outputs.containerSubnetName
+  }
+}
+
+module containerApp 'modules/containerApp.bicep' = {
+  name: 'deployContainerApp'
+  scope: resourceGroup
+  params: {
+    containerAppEnvironmentId: containerAppEnvironment.outputs.resourceId
     appSecret: appSecret
     databaseConnectionString: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
   }
