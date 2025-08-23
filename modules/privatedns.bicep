@@ -6,3 +6,4 @@ resource privateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
 }
 
 output resourceId string = privateDnsZone.id
+output resourceName string = privateDnsZone.name
