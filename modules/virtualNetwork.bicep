@@ -1,6 +1,5 @@
 param location string = resourceGroup().location
 
-var appServiceSubnetName = 'appservice'
 var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
 
@@ -21,23 +20,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
         }
       }
       {
-        name: appServiceSubnetName
-        properties: {
-          addressPrefix: '10.0.1.0/24'
-          delegations: [
-            {
-              name: 'appServiceDelegation'
-              properties: {
-                serviceName: 'Microsoft.Web/serverFarms'
-              }
-            }
-          ]
-        }
-      }
-      {
         name: 'postgres'
         properties: {
-          addressPrefix: '10.0.2.0/24'
+          addressPrefix: '10.0.1.0/24'
           delegations: [
             {
               name: 'postgresDelegation'
@@ -51,22 +36,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
       {
         name: containerSubnetName
         properties: {
-          addressPrefix: '10.0.3.0/24'
-          delegations: [
-            {
-              name: 'containerAppDelegation'
-              properties: {
-                serviceName: 'Microsoft.App/managedEnvironments'
-              }
-            }
-          ]
+          addressPrefix: '10.0.2.0/23'
         }
       }
     ]
   }
 }
 
+output resourceId string = virtualNetwork.id
 output resourceName string = virtualNetwork.name
-output appServiceSubnetName string = appServiceSubnetName
 output postgresSubnetName string = postgresSubnetName
 output containerSubnetName string = containerSubnetName
