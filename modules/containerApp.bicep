@@ -1,14 +1,17 @@
+import { environmentVariable } from '../types/environmentVariable.bicep'
+
 param location string = resourceGroup().location
+param cpu string = '0.5'
+param memory string = '1Gi'
 
 param containerAppEnvironmentId string
-@secure()
-param appSecret string
-@secure()
-param databaseConnectionString string
+param imageName string
+param imageTag string
+param applicationName string
+param targetPort int
+param environmentVariables environmentVariable[]
 
-var containerAppName = 'ca-schouls-umami-${uniqueString(resourceGroup().id)}'
-var imageName = 'ghcr.io/umami-software/umami'
-var imageTag = 'postgresql-latest'
+var containerAppName = 'ca-${applicationName}'
 
 resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
   name: containerAppName
@@ -20,7 +23,7 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
       ingress: {
         allowInsecure: false
         external: true
-        targetPort: 3000
+        targetPort: targetPort
         targetPortHttpScheme: 'https'
         transport: 'auto'
         traffic: [
@@ -36,24 +39,11 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
       containers: [
         {
           name: containerAppName
-          env: [
-            {
-              name: 'DATABASE_TYPE'
-              value: 'postgresql'
-            }
-            {
-              name: 'DATABASE_URL'
-              value: databaseConnectionString
-            }
-            {
-              name: 'APP_SECRET'
-              value: appSecret
-            }
-          ]
+          env: environmentVariables
           image: '${imageName}:${imageTag}'
           resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
+            cpu: json(cpu)
+            memory: memory
           }
         }
       ]

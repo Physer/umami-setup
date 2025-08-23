@@ -9,17 +9,21 @@ param databasePassword string
 @secure()
 param appSecret string
 
-var databaseResourceName = 'psql-schouls-umami-${uniqueString(subscription().id)}'
+var applicationName = 'analytics-${uniqueString(subscription().id)}'
+var databaseResourceName = 'psql-${applicationName}'
 var databaseName = 'umami'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
-  name: 'rg-schouls-umami-${environment}'
+  name: 'rg-analytics-${environment}'
   location: location
 }
 
 module virtualNetwork './modules/virtualNetwork.bicep' = {
   name: 'deployVirtualNetwork'
   scope: resourceGroup
+  params: {
+    applicationName: applicationName
+  }
 }
 module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
@@ -56,17 +60,34 @@ module containerAppEnvironment 'modules/containerAppEnvironment.bicep' = {
   name: 'deployContainerAppEnvironment'
   scope: resourceGroup
   params: {
+    applicationName: applicationName
     virtualNetworkName: virtualNetwork.outputs.resourceName
     containerSubnetName: virtualNetwork.outputs.containerSubnetName
   }
 }
 
-module containerApp 'modules/containerApp.bicep' = {
+module umamiContainerApp 'modules/containerApp.bicep' = {
   name: 'deployContainerApp'
   scope: resourceGroup
   params: {
     containerAppEnvironmentId: containerAppEnvironment.outputs.resourceId
-    appSecret: appSecret
-    databaseConnectionString: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
+    applicationName: applicationName
+    imageName: 'ghcr.io/umami-software/umami'
+    imageTag: 'postgresql-latest'
+    targetPort: 3000
+    environmentVariables: [
+      {
+        name: 'DATABASE_TYPE'
+        value: 'postgresql'
+      }
+      {
+        name: 'DATABASE_URL'
+        value: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
+      }
+      {
+        name: 'APP_SECRET'
+        value: appSecret
+      }
+    ]
   }
 }

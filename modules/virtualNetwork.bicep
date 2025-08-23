@@ -1,10 +1,12 @@
 param location string = resourceGroup().location
 
+param applicationName string
+
 var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
-  name: 'vnet-schouls-umami-${uniqueString(resourceGroup().id)}'
+  name: 'vnet-${applicationName}'
   location: location
   properties: {
     addressSpace: {

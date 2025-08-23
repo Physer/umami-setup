@@ -3,6 +3,7 @@ param skuSize string = 'B1'
 param skuTier string = 'Basic'
 param skuFamily string = 'B'
 
+param applicationName string
 param virtualNetworkName string
 param subnetName string
 @secure()
@@ -14,7 +15,7 @@ var imageName = 'ghcr.io/umami-software/umami'
 var imageTag = 'postgresql-latest'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
-  name: 'plan-schouls-umami-${uniqueString(resourceGroup().id)}'
+  name: 'plan-${applicationName}'
   location: location
   sku: {
     name: skuSize
@@ -31,7 +32,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-11-01' = {
 var publicNetworkAccess string = 'Enabled'
 
 resource appService 'Microsoft.Web/sites@2024-11-01' = {
-  name: 'app-schouls-umami-${uniqueString(resourceGroup().id)}'
+  name: 'app-${applicationName}'
   location: location
   properties: {
     serverFarmId: appServicePlan.id
