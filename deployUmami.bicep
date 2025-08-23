@@ -30,6 +30,15 @@ module privateDns 'modules/privatedns.bicep' = {
   }
 }
 
+module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
+  name: 'deployVirtualNetworkLink'
+  scope: resourceGroup
+  params: {
+    privateDnsZoneName: privateDns.outputs.resourceName
+    virtualNetworkId: virtualNetwork.outputs.resourceId
+  }
+}
+
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   scope: resourceGroup
@@ -44,12 +53,12 @@ module postgresDatabase 'modules/postgres.bicep' = {
   }
 }
 
-module appService './modules/appservice.bicep' = {
-  name: 'deployAppService'
+module containerApp 'modules/containerApp.bicep' = {
+  name: 'deployContainerApp'
   scope: resourceGroup
   params: {
     virtualNetworkName: virtualNetwork.outputs.resourceName
-    subnetName: virtualNetwork.outputs.appServiceSubnetName
+    containerSubnetName: virtualNetwork.outputs.containerSubnetName
     appSecret: appSecret
     databaseConnectionString: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
   }
