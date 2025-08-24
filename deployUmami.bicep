@@ -1,7 +1,16 @@
 targetScope = 'subscription'
 
 param location string = deployment().location
-param environment string
+param deployAdminTools bool = false
+
+param resourceGroupName string
+param containerAppEnvironmentName string
+param umamiContainerAppName string
+param pgAdminContainerAppName string?
+param postgresServerName string
+param umamiDatabaseName string
+param virtualNetworkName string
+
 @secure()
 param databaseUsername string
 @secure()
@@ -9,12 +18,8 @@ param databasePassword string
 @secure()
 param appSecret string
 
-var applicationName = 'analytics-${uniqueString(subscription().id)}'
-var databaseResourceName = 'psql-${applicationName}'
-var databaseName = 'umami'
-
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
-  name: 'rg-analytics-${environment}'
+  name: resourceGroupName
   location: location
 }
 
@@ -22,14 +27,14 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
   name: 'deployVirtualNetwork'
   scope: resourceGroup
   params: {
-    applicationName: applicationName
+    applicationName: virtualNetworkName
   }
 }
 module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
   scope: resourceGroup
   params: {
-    postgresDatabaseResouceName: databaseResourceName
+    postgresDatabaseResouceName: postgresServerName
   }
 }
 
@@ -46,13 +51,13 @@ module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   scope: resourceGroup
   params: {
-    resourceName: databaseResourceName
-    virtualNetworkName: virtualNetwork.outputs.resourceName
+    resourceName: postgresServerName
+    virtualNetworkName: virtualNetworkName
     postgresSubnetName: virtualNetwork.outputs.postgresSubnetName
     privateDnsZoneResourceId: privateDns.outputs.resourceId
     administratorUsername: databaseUsername
     administratorPassword: databasePassword
-    databaseName: databaseName
+    databaseName: umamiDatabaseName
   }
 }
 
@@ -60,8 +65,8 @@ module containerAppEnvironment 'modules/containerAppEnvironment.bicep' = {
   name: 'deployContainerAppEnvironment'
   scope: resourceGroup
   params: {
-    applicationName: applicationName
-    virtualNetworkName: virtualNetwork.outputs.resourceName
+    applicationName: containerAppEnvironmentName
+    virtualNetworkName: virtualNetworkName
     containerSubnetName: virtualNetwork.outputs.containerSubnetName
   }
 }
@@ -71,7 +76,7 @@ module umamiContainerApp 'modules/containerApp.bicep' = {
   scope: resourceGroup
   params: {
     containerAppEnvironmentId: containerAppEnvironment.outputs.resourceId
-    applicationName: applicationName
+    applicationName: umamiContainerAppName
     imageName: 'ghcr.io/umami-software/umami'
     imageTag: 'postgresql-latest'
     targetPort: 3000
@@ -82,7 +87,7 @@ module umamiContainerApp 'modules/containerApp.bicep' = {
       }
       {
         name: 'DATABASE_URL'
-        value: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${databaseName}'
+        value: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${umamiDatabaseName}'
       }
       {
         name: 'APP_SECRET'

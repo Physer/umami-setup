@@ -5,7 +5,7 @@ param virtualNetworkName string
 param containerSubnetName string
 
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2025-02-02-preview' = {
-  name: 'cae-${applicationName}'
+  name: applicationName
   location: location
   properties: {
     publicNetworkAccess: 'Enabled'

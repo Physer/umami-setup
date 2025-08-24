@@ -11,10 +11,8 @@ param applicationName string
 param targetPort int
 param environmentVariables environmentVariable[]
 
-var containerAppName = 'ca-${applicationName}'
-
 resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
-  name: containerAppName
+  name: applicationName
   location: location
   properties: {
     managedEnvironmentId: containerAppEnvironmentId
@@ -38,7 +36,7 @@ resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
     template: {
       containers: [
         {
-          name: containerAppName
+          name: applicationName
           env: environmentVariables
           image: '${imageName}:${imageTag}'
           resources: {

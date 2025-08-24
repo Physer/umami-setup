@@ -6,7 +6,7 @@ var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
-  name: 'vnet-${applicationName}'
+  name: applicationName
   location: location
   properties: {
     addressSpace: {
@@ -46,6 +46,5 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
 }
 
 output resourceId string = virtualNetwork.id
-output resourceName string = virtualNetwork.name
 output postgresSubnetName string = postgresSubnetName
 output containerSubnetName string = containerSubnetName
