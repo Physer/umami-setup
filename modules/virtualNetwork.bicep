@@ -4,6 +4,7 @@ param applicationName string
 
 var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
+var appServiceSubnetName = 'appservice'
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
   name: applicationName
@@ -41,6 +42,20 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
           addressPrefix: '10.0.2.0/23'
         }
       }
+      {
+        name: appServiceSubnetName
+        properties: {
+          addressPrefix: '10.0.4.0/24'
+          delegations: [
+            {
+              name: 'appServiceDelegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverfarms'
+              }
+            }
+          ]
+        }
+      }
     ]
   }
 }
@@ -48,3 +63,4 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
 output resourceId string = virtualNetwork.id
 output postgresSubnetName string = postgresSubnetName
 output containerSubnetName string = containerSubnetName
+output appServiceSubnetName string = appServiceSubnetName

@@ -1,12 +1,13 @@
 targetScope = 'subscription'
 
 param location string = deployment().location
-param deployAdminTools bool = false
 
 param resourceGroupName string
-param containerAppEnvironmentName string
-param umamiContainerAppName string
-param pgAdminContainerAppName string?
+param appServicePlanName string
+param appServicePlanSkuTier string
+param appServicePlanSkuSize string
+param appServicePlanSkuFamily string
+param umamiAppServiceName string
 param postgresServerName string
 param umamiDatabaseName string
 param virtualNetworkName string
@@ -61,26 +62,28 @@ module postgresDatabase 'modules/postgres.bicep' = {
   }
 }
 
-module containerAppEnvironment 'modules/containerAppEnvironment.bicep' = {
-  name: 'deployContainerAppEnvironment'
+module appServicePlan 'modules/appServicePlan.bicep' = {
+  name: 'deployAppServicePlan'
   scope: resourceGroup
   params: {
-    applicationName: containerAppEnvironmentName
-    virtualNetworkName: virtualNetworkName
-    containerSubnetName: virtualNetwork.outputs.containerSubnetName
+    appServicePlanName: appServicePlanName
+    skuFamily: appServicePlanSkuFamily
+    skuSize: appServicePlanSkuSize
+    skuTier: appServicePlanSkuTier
   }
 }
 
-module umamiContainerApp 'modules/containerApp.bicep' = {
-  name: 'deployContainerApp'
+module umamiAppService 'modules/dockerAppService.bicep' = {
+  name: 'deployUmamiAppService'
   scope: resourceGroup
   params: {
-    containerAppEnvironmentId: containerAppEnvironment.outputs.resourceId
-    applicationName: umamiContainerAppName
+    appServicePlanId: appServicePlan.outputs.resourceId
     imageName: 'ghcr.io/umami-software/umami'
     imageTag: 'postgresql-latest'
-    targetPort: 3000
-    environmentVariables: [
+    appServiceName: umamiAppServiceName
+    subnetName: virtualNetwork.outputs.appServiceSubnetName
+    virtualNetworkName: virtualNetworkName
+    appSettings: [
       {
         name: 'DATABASE_TYPE'
         value: 'postgresql'
