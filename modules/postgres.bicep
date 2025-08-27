@@ -53,6 +53,15 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-pr
   }
 }
 
+resource databaseConfiguration 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2025-01-01-preview' = {
+  name: 'azure.extensions'
+  parent: postgresServer
+  properties: {
+    source: 'user-override'
+    value: 'pgcrypto'
+  }
+}
+
 resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2025-01-01-preview' = {
   parent: postgresServer
   name: databaseName
