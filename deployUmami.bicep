@@ -11,6 +11,10 @@ param umamiAppServiceName string
 param postgresServerName string
 param umamiDatabaseName string
 param virtualNetworkName string
+param deployPgAdmin bool
+param pgAdminAppServiceName string?
+param pgAdminEmail string?
+param pgAdminPassword string?
 
 @secure()
 param databaseUsername string
@@ -97,5 +101,28 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
         value: appSecret
       }
     ]
+  }
+}
+
+module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin && !empty(pgAdminAppServiceName) && !empty(pgAdminEmail) && !empty(pgAdminPassword)) {
+  name: 'deployPgAdminAppService'
+  scope: resourceGroup
+  params: {
+    appServiceName: pgAdminAppServiceName!
+    appServicePlanId: appServicePlan.outputs.resourceId
+    appSettings: [
+      {
+        name: 'PGADMIN_DEFAULT_EMAIL'
+        value: pgAdminEmail!
+      }
+      {
+        name: 'PGADMIN_DEFAULT_PASSWORD'
+        value: pgAdminPassword!
+      }
+    ]
+    imageName: 'dpage/pgadmin4'
+    imageTag: 'latest'
+    subnetName: virtualNetwork.outputs.appServiceSubnetName
+    virtualNetworkName: virtualNetworkName
   }
 }

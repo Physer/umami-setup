@@ -16,6 +16,12 @@ param umamiAppServiceName = 'app-schouls-umami-${environment}'
 param postgresServerName = 'psql-schouls-umami-${environment}'
 param virtualNetworkName = 'vnet-schouls-analytics-${environment}'
 
+// Admin tools parameters
+param deployPgAdmin = true
+param pgAdminAppServiceName = 'app-schouls-pgadmin-${environment}'
+param pgAdminEmail = 'admin@alexschouls.com'
+param pgAdminPassword = 'P@ssw0rd!'
+
 // Secure parameters
 param databaseUsername = 'psqladmin'
 param databasePassword = 'P@ssw0rd!'
