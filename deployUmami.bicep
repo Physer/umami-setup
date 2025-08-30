@@ -117,6 +117,14 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
         name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
         value: monitoring.outputs.applicationInsightsConnectionString
       }
+      {
+        name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+        value: '~3'
+      }
+      {
+        name: 'XDT_MicrosoftApplicationInsights_Mode'
+        value: 'Recommended'
+      }
     ]
   }
 }
