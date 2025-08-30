@@ -1,7 +1,7 @@
-param postgresDatabaseResouceName string
+param postgresDatabaseResourceName string
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
-  name: '${postgresDatabaseResouceName}.private.postgres.database.azure.com'
+  name: '${postgresDatabaseResourceName}.private.postgres.database.azure.com'
   location: 'global'
 }
 

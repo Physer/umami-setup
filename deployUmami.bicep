@@ -39,7 +39,7 @@ module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
   scope: resourceGroup
   params: {
-    postgresDatabaseResouceName: postgresServerName
+    postgresDatabaseResourceName: postgresServerName
   }
 }
 
