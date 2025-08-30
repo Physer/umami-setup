@@ -113,6 +113,10 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
         name: 'APP_SECRET'
         value: appSecret
       }
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: monitoring.outputs.applicationInsightsConnectionString
+      }
     ]
   }
 }
