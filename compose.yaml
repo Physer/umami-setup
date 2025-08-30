@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
   db:
-    image: postgres:alpine
+    image: postgres:15-alpine
     container_name: umami-database
     environment:
       POSTGRES_DB: ${UMAMI_DATABASE_NAME}
