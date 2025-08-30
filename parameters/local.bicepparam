@@ -10,19 +10,19 @@ param appServicePlanSkuFamily = 'B'
 param umamiDatabaseName = 'umami'
 
 // Environment-specific parameters
-param resourceGroupName = 'rg-schouls-analytics-${environment}'
-param appServicePlanName = 'plan-schouls-analytics-${environment}'
-param umamiAppServiceName = 'app-schouls-umami-${environment}'
-param postgresServerName = 'psql-schouls-umami-${environment}'
-param virtualNetworkName = 'vnet-schouls-analytics-${environment}'
+param resourceGroupName = 'rg-analytics-${environment}'
+param appServicePlanName = 'plan-analytics-${environment}'
+param umamiAppServiceName = 'app-umami-${environment}'
+param postgresServerName = 'psql-umami-${environment}'
+param virtualNetworkName = 'vnet-analytics-${environment}'
 
 // Admin tools parameters
 param deployPgAdmin = true
-param pgAdminAppServiceName = 'app-schouls-pgadmin-${environment}'
-param pgAdminEmail = 'admin@alexschouls.com'
-param pgAdminPassword = 'P@ssw0rd!'
+param pgAdminAppServiceName = 'app-pgadmin-${environment}'
+param pgAdminEmail = 'admin@local-analytics.com'
+param pgAdminPassword = 'g4MdT24B?HB)A1&b6r8n4Gi4'
 
 // Secure parameters
 param databaseUsername = 'psqladmin'
-param databasePassword = 'P@ssw0rd!'
-param appSecret = 'P@ssw0rd!'
+param databasePassword = 'No%5`RB1vu,R3RM~OsN;24Sa'
+param appSecret = 'CxpBgns+9<S63&0@6}l@28<M'
