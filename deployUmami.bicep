@@ -54,6 +54,15 @@ module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
   }
 }
 
+module monitoring 'modules/monitoring.bicep' = {
+  name: 'deployMonitoring'
+  scope: resourceGroup
+  params: {
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    applicationInsightsName: applicationInsightsName
+  }
+}
+
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   scope: resourceGroup
@@ -65,6 +74,7 @@ module postgresDatabase 'modules/postgres.bicep' = {
     administratorUsername: databaseUsername
     administratorPassword: databasePassword
     databaseName: umamiDatabaseName
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -76,6 +86,7 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
     skuFamily: appServicePlanSkuFamily
     skuSize: appServicePlanSkuSize
     skuTier: appServicePlanSkuTier
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -126,14 +137,5 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
     imageTag: 'latest'
     subnetName: virtualNetwork.outputs.appServiceSubnetName
     virtualNetworkName: virtualNetworkName
-  }
-}
-
-module monitoring 'modules/monitoring.bicep' = {
-  name: 'deployMonitoring'
-  scope: resourceGroup
-  params: {
-    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
-    applicationInsightsName: applicationInsightsName
   }
 }
