@@ -15,6 +15,8 @@ param deployPgAdmin bool
 param pgAdminAppServiceName string?
 param pgAdminEmail string?
 param pgAdminPassword string?
+param logAnalyticsWorkspaceName string
+param applicationInsightsName string
 
 @secure()
 param databaseUsername string
@@ -124,5 +126,14 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
     imageTag: 'latest'
     subnetName: virtualNetwork.outputs.appServiceSubnetName
     virtualNetworkName: virtualNetworkName
+  }
+}
+
+module monitoring 'modules/monitoring.bicep' = {
+  name: 'deployMonitoring'
+  scope: resourceGroup
+  params: {
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    applicationInsightsName: applicationInsightsName
   }
 }
