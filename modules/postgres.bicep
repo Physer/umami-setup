@@ -22,7 +22,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-pr
     tier: skuTier
   }
   properties: {
-    version: '15'
+    version: '17'
     administratorLogin: administratorUsername
     administratorLoginPassword: administratorPassword
     authConfig: {
