@@ -15,6 +15,8 @@ param appServicePlanName = 'plan-analytics-${environment}'
 param umamiAppServiceName = 'app-umami-${environment}'
 param postgresServerName = 'psql-umami-${environment}'
 param virtualNetworkName = 'vnet-analytics-${environment}'
+param applicationInsightsName = 'appi-analytics-${environment}'
+param logAnalyticsWorkspaceName = 'log-analytics-${environment}'
 
 // Admin tools parameters
 param deployPgAdmin = true

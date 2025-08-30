@@ -6,7 +6,8 @@
 
 ## 📋 Overview
 
-This repository provides a complete, automated infrastructure-as-code solution for hosting **Umami**, a privacy-focused, open-source web analytics platform, in Microsoft Azure. Designed as a modern alternative to Google Analytics, this setup prioritizes data privacy, security, and full organizational control over analytics data.
+This repository provides a complete, automated infrastructure-as-code solution for hosting **Umami**, a privacy-focused, open-source web analytics platform, in Microsoft Azure.
+Designed as a modern alternative to Google Analytics, this setup prioritizes data privacy, security, and full organizational control over analytics data.
 
 The entire deployment is orchestrated using **Azure Bicep templates**, ensuring reproducible, maintainable, and scalable infrastructure provisioning.
 
@@ -104,6 +105,7 @@ For local development and testing, you can run Umami using Docker Compose. The D
 - ✅ **Virtual Network Security** - Isolated network architecture with private endpoint connectivity
 - ✅ **Container-Based Hosting** - Modern Linux container deployment on Azure App Service
 - ✅ **Local Development Setup** - Docker Compose configuration for streamlined local development and testing
+- ✅ **Application Monitoring** - Azure Application Insights integration for comprehensive observability
 
 ## 🛣️ Roadmap
 
@@ -112,7 +114,6 @@ The following enhancements are planned to expand and improve the platform:
 ### 🔧 Development & Operations
 
 - **🔄 CI/CD Automation** - Automated deployment pipelines for staging and production environments
-- **📊 Application Monitoring** - Azure Application Insights integration for comprehensive observability
 
 ### 🔐 Security & Configuration  
 

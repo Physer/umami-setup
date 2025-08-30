@@ -15,6 +15,8 @@ param deployPgAdmin bool
 param pgAdminAppServiceName string?
 param pgAdminEmail string?
 param pgAdminPassword string?
+param logAnalyticsWorkspaceName string
+param applicationInsightsName string
 
 @secure()
 param databaseUsername string
@@ -52,6 +54,15 @@ module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
   }
 }
 
+module monitoring 'modules/monitoring.bicep' = {
+  name: 'deployMonitoring'
+  scope: resourceGroup
+  params: {
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    applicationInsightsName: applicationInsightsName
+  }
+}
+
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   scope: resourceGroup
@@ -63,6 +74,7 @@ module postgresDatabase 'modules/postgres.bicep' = {
     administratorUsername: databaseUsername
     administratorPassword: databasePassword
     databaseName: umamiDatabaseName
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -74,6 +86,7 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
     skuFamily: appServicePlanSkuFamily
     skuSize: appServicePlanSkuSize
     skuTier: appServicePlanSkuTier
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -100,6 +113,18 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
         name: 'APP_SECRET'
         value: appSecret
       }
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: monitoring.outputs.applicationInsightsConnectionString
+      }
+      {
+        name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+        value: '~3'
+      }
+      {
+        name: 'XDT_MicrosoftApplicationInsights_Mode'
+        value: 'Recommended'
+      }
     ]
   }
 }
@@ -118,6 +143,18 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
       {
         name: 'PGADMIN_DEFAULT_PASSWORD'
         value: pgAdminPassword!
+      }
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: monitoring.outputs.applicationInsightsConnectionString
+      }
+      {
+        name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+        value: '~3'
+      }
+      {
+        name: 'XDT_MicrosoftApplicationInsights_Mode'
+        value: 'Recommended'
       }
     ]
     imageName: 'dpage/pgadmin4'

@@ -9,6 +9,7 @@ param virtualNetworkName string
 param postgresSubnetName string
 param privateDnsZoneResourceId string
 param databaseName string
+param logAnalyticsWorkspaceId string
 @secure()
 param administratorUsername string
 @secure()
@@ -65,6 +66,20 @@ resource databaseConfiguration 'Microsoft.DBforPostgreSQL/flexibleServers/config
 resource postgresDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2025-01-01-preview' = {
   parent: postgresServer
   name: databaseName
+}
+
+resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: postgresServer.name
+  scope: postgresServer
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    metrics: [
+      {
+        enabled: true
+        category: 'AllMetrics'
+      }
+    ]
+  }
 }
 
 output serverFqdn string = postgresServer.properties.fullyQualifiedDomainName
