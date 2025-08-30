@@ -23,7 +23,7 @@ This solution is perfect for organizations seeking enterprise-grade analytics wi
 
 ### Prerequisites
 
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed and configured
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed and configured
 - Active Azure subscription with appropriate permissions
 
 ### Deployment Steps
