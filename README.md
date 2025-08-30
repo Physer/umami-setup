@@ -105,6 +105,7 @@ For local development and testing, you can run Umami using Docker Compose. The D
 - ✅ **Virtual Network Security** - Isolated network architecture with private endpoint connectivity
 - ✅ **Container-Based Hosting** - Modern Linux container deployment on Azure App Service
 - ✅ **Local Development Setup** - Docker Compose configuration for streamlined local development and testing
+- ✅ **Application Monitoring** - Azure Application Insights integration for comprehensive observability
 
 ## 🛣️ Roadmap
 
@@ -113,7 +114,6 @@ The following enhancements are planned to expand and improve the platform:
 ### 🔧 Development & Operations
 
 - **🔄 CI/CD Automation** - Automated deployment pipelines for staging and production environments
-- **📊 Application Monitoring** - Azure Application Insights integration for comprehensive observability
 
 ### 🔐 Security & Configuration  
 
