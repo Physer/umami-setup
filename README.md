@@ -52,12 +52,58 @@ This solution is perfect for organizations seeking enterprise-grade analytics wi
 
 > ⚠️ **Environment Notice**: This configuration currently deploys a local/development environment. Production and staging environments will be supported in future releases.
 
+## 🐳 Local Development with Docker Compose
+
+For local development and testing, you can run Umami using Docker Compose. The Docker Compose configuration is based on the official Umami repository with minor modifications for increased reusability and flexibility.
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started) and Docker Compose installed
+- Git for cloning the repository
+
+### Setup Steps
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/Physer/umami-setup
+   cd umami-setup
+   ```
+
+2. **Configure environment variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit the `.env` file with your configuration:
+   - Set database credentials
+   - Configure application settings
+   - Adjust any other environment-specific variables
+
+3. **Start the services**
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. **Access Umami**
+
+   Once started, Umami will be available at `http://localhost:3000`
+
+5. **Stop the services**
+
+   ```bash
+   docker compose down
+   ```
+
 ## ✨ Current Features
 
 - ✅ **Automated Infrastructure Provisioning** - Complete resource deployment using Bicep templates
 - ✅ **Azure CLI Integration** - Streamlined deployment via command-line interface with parameter files  
 - ✅ **Virtual Network Security** - Isolated network architecture with private endpoint connectivity
 - ✅ **Container-Based Hosting** - Modern Linux container deployment on Azure App Service
+- ✅ **Local Development Setup** - Docker Compose configuration for streamlined local development and testing
 
 ## 🛣️ Roadmap
 
@@ -65,7 +111,6 @@ The following enhancements are planned to expand and improve the platform:
 
 ### 🔧 Development & Operations
 
-- **🐳 Local Development Setup** - Docker Compose configuration for streamlined local development
 - **🔄 CI/CD Automation** - Automated deployment pipelines for staging and production environments
 - **📊 Application Monitoring** - Azure Application Insights integration for comprehensive observability
 

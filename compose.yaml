@@ -1,0 +1,40 @@
+# Taken from https://github.com/umami-software/umami/blob/master/docker-compose.yml
+---
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: umami-app
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_DATABASE_USER}:${UMAMI_DATABASE_PASSWORD}@db:5432/${UMAMI_DATABASE_NAME}
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    init: true
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  db:
+    image: postgres:15-alpine
+    container_name: umami-database
+    environment:
+      POSTGRES_DB: ${UMAMI_DATABASE_NAME}
+      POSTGRES_USER: ${UMAMI_DATABASE_USER}
+      POSTGRES_PASSWORD: ${UMAMI_DATABASE_PASSWORD}
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  umami-db-data:
