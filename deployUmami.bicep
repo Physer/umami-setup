@@ -144,6 +144,18 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
         name: 'PGADMIN_DEFAULT_PASSWORD'
         value: pgAdminPassword!
       }
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: monitoring.outputs.applicationInsightsConnectionString
+      }
+      {
+        name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+        value: '~3'
+      }
+      {
+        name: 'XDT_MicrosoftApplicationInsights_Mode'
+        value: 'Recommended'
+      }
     ]
     imageName: 'dpage/pgadmin4'
     imageTag: 'latest'
