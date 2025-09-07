@@ -27,5 +27,16 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2024-07-01' = {
     subnet: {
       id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
     }
+    privateLinkServiceConnections: [
+      {
+        name: '${keyVaultName}-connection'
+        properties: {
+          privateLinkServiceId: keyVault.id
+          groupIds: [
+            'vault'
+          ]
+        }
+      }
+    ]
   }
 }
