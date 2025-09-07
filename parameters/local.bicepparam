@@ -17,6 +17,8 @@ param postgresServerName = 'psql-umami-${environment}'
 param virtualNetworkName = 'vnet-analytics-${environment}'
 param applicationInsightsName = 'appi-analytics-${environment}'
 param logAnalyticsWorkspaceName = 'log-analytics-${environment}'
+param keyVaultName = 'kv-analytics-${environment}'
+param keyVaultPrivateEndpointName = 'pe-kv-analytics-${environment}'
 
 // Admin tools parameters
 param deployPgAdmin = true

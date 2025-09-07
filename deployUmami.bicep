@@ -17,6 +17,8 @@ param pgAdminEmail string?
 param pgAdminPassword string?
 param logAnalyticsWorkspaceName string
 param applicationInsightsName string
+param keyVaultName string
+param keyVaultPrivateEndpointName string
 
 @secure()
 param databaseUsername string
@@ -37,6 +39,18 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
     applicationName: virtualNetworkName
   }
 }
+
+module keyVault 'modules/keyVault.bicep' = {
+  name: 'deployKeyVault'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVaultName
+    keyVaultPrivateEndpointName: keyVaultPrivateEndpointName
+    virtualNetworkName: virtualNetworkName
+    subnetName: virtualNetwork.outputs.keyVaultSubnetName
+  }
+}
+
 module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
   scope: resourceGroup
