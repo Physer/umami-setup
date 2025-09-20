@@ -17,6 +17,8 @@ param pgAdminEmail string?
 param pgAdminPassword string?
 param logAnalyticsWorkspaceName string
 param applicationInsightsName string
+param virtualNetworkGatewayPublicIpName string
+param virtualNetworkGatewayName string
 
 @secure()
 param databaseUsername string
@@ -51,6 +53,25 @@ module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
   params: {
     privateDnsZoneName: privateDns.outputs.resourceName
     virtualNetworkId: virtualNetwork.outputs.resourceId
+  }
+}
+
+module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
+  name: 'deployVpnPublicIp'
+  scope: resourceGroup
+  params: {
+    publicIpName: virtualNetworkGatewayPublicIpName
+  }
+}
+
+module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
+  name: 'deployVpnGateway'
+  scope: resourceGroup
+  params: {
+    virtualNetworkName: virtualNetworkName
+    subnetName: virtualNetwork.outputs.vpnSubnetName
+    publicIpName: virtualNetworkGatewayPublicIpName
+    virtualNetworkGatewayName: virtualNetworkGatewayName
   }
 }
 

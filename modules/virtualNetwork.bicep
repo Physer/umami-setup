@@ -5,6 +5,7 @@ param applicationName string
 var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
 var appServiceSubnetName = 'appservice'
+var vpnSubnetName = 'GatewaySubnet' // This name is required by Azure
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
   name: applicationName
@@ -56,6 +57,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
           ]
         }
       }
+      {
+        name: vpnSubnetName
+        properties: {
+          addressPrefix: '10.0.6.0/24'
+        }
+      }
     ]
   }
 }
@@ -64,3 +71,4 @@ output resourceId string = virtualNetwork.id
 output postgresSubnetName string = postgresSubnetName
 output containerSubnetName string = containerSubnetName
 output appServiceSubnetName string = appServiceSubnetName
+output vpnSubnetName string = vpnSubnetName
