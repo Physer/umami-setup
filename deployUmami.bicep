@@ -27,27 +27,20 @@ param databasePassword string
 @secure()
 param appSecret string
 
+// Role Assignment Definitions
+var keyVaultSecretsUserRoleDefinitionId = '4633458b-17de-408a-b874-0445c86b69e6'
+
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: location
 }
 
+// Networking
 module virtualNetwork './modules/virtualNetwork.bicep' = {
   name: 'deployVirtualNetwork'
   scope: resourceGroup
   params: {
     applicationName: virtualNetworkName
-  }
-}
-
-module keyVault 'modules/keyVault.bicep' = {
-  name: 'deployKeyVault'
-  scope: resourceGroup
-  params: {
-    keyVaultName: keyVaultName
-    keyVaultPrivateEndpointName: keyVaultPrivateEndpointName
-    virtualNetworkName: virtualNetworkName
-    subnetName: virtualNetwork.outputs.keyVaultSubnetName
   }
 }
 
@@ -68,6 +61,19 @@ module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
   }
 }
 
+// Key Vault
+module keyVault 'modules/keyVault.bicep' = {
+  name: 'deployKeyVault'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVaultName
+    keyVaultPrivateEndpointName: keyVaultPrivateEndpointName
+    virtualNetworkName: virtualNetworkName
+    subnetName: virtualNetwork.outputs.keyVaultSubnetName
+  }
+}
+
+// Application Insights and Azure Monitoring
 module monitoring 'modules/monitoring.bicep' = {
   name: 'deployMonitoring'
   scope: resourceGroup
@@ -77,6 +83,7 @@ module monitoring 'modules/monitoring.bicep' = {
   }
 }
 
+// Database
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   scope: resourceGroup
@@ -92,6 +99,7 @@ module postgresDatabase 'modules/postgres.bicep' = {
   }
 }
 
+// App Services
 module appServicePlan 'modules/appServicePlan.bicep' = {
   name: 'deployAppServicePlan'
   scope: resourceGroup
@@ -175,5 +183,26 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
     imageTag: 'latest'
     subnetName: virtualNetwork.outputs.appServiceSubnetName
     virtualNetworkName: virtualNetworkName
+  }
+}
+
+// Role Assignments
+module umamiAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = {
+  name: 'deployUmamiAppServiceKeyVaultRoleAssignment'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVaultName
+    principalId: umamiAppService.outputs.principalId
+    roleDefinitionId: keyVaultSecretsUserRoleDefinitionId
+  }
+}
+
+module pgAdminAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = if (deployPgAdmin) {
+  name: 'deployPgAdminAppServiceKeyVaultRoleAssignment'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVaultName
+    principalId: pgAdminAppService!.outputs.principalId
+    roleDefinitionId: keyVaultSecretsUserRoleDefinitionId
   }
 }
