@@ -11,6 +11,11 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2024-07-01' = {
     tier: skuTier
   }
   properties: {
-    publicIPAllocationMethod: 'Dynamic'
+    publicIPAllocationMethod: 'Static'
   }
+  zones: [
+    '1'
+    '2'
+    '3'
+  ]
 }

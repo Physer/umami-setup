@@ -1,6 +1,6 @@
 param location string = resourceGroup().location
-param tenantId string = tenant().tenantId
-param skuName string = 'Basic'
+param tenantId string = subscription().tenantId
+param skuName string = 'VpnGw1AZ'
 param virtualNetworkName string
 param subnetName string
 param virtualNetworkGatewayName string
@@ -63,7 +63,7 @@ resource vpnGateway 'Microsoft.Network/virtualNetworkGateways@2024-07-01' = {
       ]
       aadAudience: microsoftRegisteredAudience
       aadIssuer: microsoftRegisteredIssuer
-      aadTenant: tenantId
+      aadTenant: uri(environment().authentication.loginEndpoint, tenantId)
     }
   }
 }
