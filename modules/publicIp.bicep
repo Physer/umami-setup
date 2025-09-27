@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param skuName string = 'StandardV2'
+param skuName string = 'Standard'
 param skuTier string = 'Regional'
 param publicIpName string
 
