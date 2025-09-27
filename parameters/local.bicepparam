@@ -10,7 +10,6 @@ param appServicePlanSkuFamily = 'B'
 param umamiDatabaseName = 'umami'
 
 // Environment-specific parameters
-param resourceGroupName = 'rg-analytics-${environment}'
 param appServicePlanName = 'plan-analytics-${environment}'
 param umamiAppServiceName = 'app-umami-${environment}'
 param postgresServerName = 'psql-umami-${environment}'

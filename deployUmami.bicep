@@ -1,8 +1,3 @@
-targetScope = 'subscription'
-
-param location string = deployment().location
-
-param resourceGroupName string
 param appServicePlanName string
 param appServicePlanSkuTier string
 param appServicePlanSkuSize string
@@ -27,21 +22,14 @@ param databasePassword string
 @secure()
 param appSecret string
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
-  name: resourceGroupName
-  location: location
-}
-
 module virtualNetwork './modules/virtualNetwork.bicep' = {
   name: 'deployVirtualNetwork'
-  scope: resourceGroup
   params: {
     applicationName: virtualNetworkName
   }
 }
 module privateDns 'modules/privatedns.bicep' = {
   name: 'deployPrivateDns'
-  scope: resourceGroup
   params: {
     postgresDatabaseResourceName: postgresServerName
   }
@@ -49,7 +37,6 @@ module privateDns 'modules/privatedns.bicep' = {
 
 module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
   name: 'deployVirtualNetworkLink'
-  scope: resourceGroup
   params: {
     privateDnsZoneName: privateDns.outputs.resourceName
     virtualNetworkId: virtualNetwork.outputs.resourceId
@@ -58,7 +45,6 @@ module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
 
 module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
   name: 'deployVpnPublicIp'
-  scope: resourceGroup
   params: {
     publicIpName: virtualNetworkGatewayPublicIpName
   }
@@ -66,7 +52,6 @@ module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
 
 module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
   name: 'deployVpnGateway'
-  scope: resourceGroup
   params: {
     virtualNetworkName: virtualNetworkName
     subnetName: virtualNetwork.outputs.vpnSubnetName
@@ -77,7 +62,6 @@ module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
 
 module monitoring 'modules/monitoring.bicep' = {
   name: 'deployMonitoring'
-  scope: resourceGroup
   params: {
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     applicationInsightsName: applicationInsightsName
@@ -86,7 +70,6 @@ module monitoring 'modules/monitoring.bicep' = {
 
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
-  scope: resourceGroup
   params: {
     resourceName: postgresServerName
     virtualNetworkName: virtualNetworkName
@@ -101,7 +84,6 @@ module postgresDatabase 'modules/postgres.bicep' = {
 
 module appServicePlan 'modules/appServicePlan.bicep' = {
   name: 'deployAppServicePlan'
-  scope: resourceGroup
   params: {
     appServicePlanName: appServicePlanName
     skuFamily: appServicePlanSkuFamily
@@ -113,7 +95,6 @@ module appServicePlan 'modules/appServicePlan.bicep' = {
 
 module umamiAppService 'modules/dockerAppService.bicep' = {
   name: 'deployUmamiAppService'
-  scope: resourceGroup
   params: {
     appServicePlanId: appServicePlan.outputs.resourceId
     imageName: 'ghcr.io/umami-software/umami'
@@ -152,7 +133,6 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
 
 module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin && !empty(pgAdminAppServiceName) && !empty(pgAdminEmail) && !empty(pgAdminPassword)) {
   name: 'deployPgAdminAppService'
-  scope: resourceGroup
   params: {
     appServiceName: pgAdminAppServiceName!
     appServicePlanId: appServicePlan.outputs.resourceId
