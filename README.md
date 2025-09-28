@@ -16,6 +16,8 @@ The entire deployment is orchestrated using **Azure Bicep templates**, ensuring 
 - **🔧 Infrastructure as Code**: All resources defined using Azure Bicep for maintainable, version-controlled infrastructure
 - **🐳 Containerized Deployment**: Umami runs on Azure App Service with Linux containers for optimal performance and scalability  
 - **🔒 Network Security**: Isolated deployment using Azure Virtual Networks with private DNS and secure connectivity
+- **🌐 Hybrid Connectivity**: Point-to-Site VPN Gateway with Azure AD authentication for secure on-premises access
+- **🔍 DNS Resolution**: Azure DNS Private Resolver for seamless name resolution between on-premises and Azure resources
 - **📊 Privacy-First Analytics**: Complete data ownership with GDPR-compliant analytics platform
 
 This solution is perfect for organizations seeking enterprise-grade analytics without compromising on data privacy or control.
@@ -49,6 +51,8 @@ This solution is perfect for organizations seeking enterprise-grade analytics wi
    - Azure App Service with Linux container
    - PostgreSQL Flexible Server database
    - Virtual Network with private endpoints
+   - Point-to-Site VPN Gateway with Azure AD authentication
+   - DNS Private Resolver for hybrid name resolution
    - Supporting networking infrastructure
 
 > ⚠️ **Environment Notice**: This configuration currently deploys a local/development environment. Production and staging environments will be supported in future releases.
@@ -98,11 +102,54 @@ For local development and testing, you can run Umami using Docker Compose. The D
    docker compose down
    ```
 
+## 🔐 VPN Connectivity
+
+The infrastructure includes a Point-to-Site VPN Gateway that enables secure connectivity from on-premises machines to the Azure Virtual Network. This allows direct access to private resources and seamless integration with existing corporate networks.
+
+### VPN Features
+
+- **🔑 Azure AD Authentication**: Secure authentication using your organization's Azure Active Directory
+- **🌐 OpenVPN Protocol**: Modern, secure VPN protocol with cross-platform client support
+- **🔍 DNS Resolution**: Integrated DNS Private Resolver for seamless name resolution between on-premises and Azure
+- **📱 Multi-Platform Support**: Compatible with Windows, macOS, iOS, and Android devices
+
+### Connecting to the VPN
+
+1. **Download VPN Client Configuration**
+
+   After deployment, download the VPN client configuration from the Azure portal:
+
+   ```pwsh
+   # Get the VPN client configuration URL
+   az network vnet-gateway vpn-client generate --name <gateway-name> --resource-group <resource-group> --authentication-method EAPTLS
+   ```
+
+2. **Install VPN Client**
+
+   - **Windows/macOS/Linux**: Use the Azure VPN Client or OpenVPN client
+   - **Mobile**: Use the Azure VPN Client app from your device's app store
+
+3. **Import Configuration**
+
+   Import the downloaded configuration file into your VPN client and connect using your Azure AD credentials.
+
+### DNS Configuration
+
+The DNS Private Resolver automatically handles name resolution for:
+
+- Azure private endpoints (PostgreSQL, App Service)
+- On-premises resources (forwarded to your corporate DNS)
+- Cross-network connectivity scenarios
+
+> 💡 **Note**: VPN connectivity is particularly useful for development teams, database administration, and secure access to private Azure resources without exposing them to the public internet.
+
 ## ✨ Current Features
 
 - ✅ **Automated Infrastructure Provisioning** - Complete resource deployment using Bicep templates
 - ✅ **Azure CLI Integration** - Streamlined deployment via command-line interface with parameter files  
 - ✅ **Virtual Network Security** - Isolated network architecture with private endpoint connectivity
+- ✅ **Hybrid Connectivity** - Point-to-Site VPN Gateway with Azure AD authentication for secure on-premises access
+- ✅ **DNS Resolution** - Azure DNS Private Resolver for seamless name resolution between networks
 - ✅ **Container-Based Hosting** - Modern Linux container deployment on Azure App Service
 - ✅ **Local Development Setup** - Docker Compose configuration for streamlined local development and testing
 - ✅ **Application Monitoring** - Azure Application Insights integration for comprehensive observability
@@ -120,6 +167,8 @@ The following enhancements are planned to expand and improve the platform:
 - **🔑 Secrets Management** - Azure Key Vault integration for secure credential handling
 - **🌐 Custom Domains** - Support for custom domain configuration via Bicep automation
 - **🛡️ Access Control** - IP whitelisting and Entra ID managed identity integration
+- **🔒 Site-to-Site VPN** - Extension to support site-to-site VPN connections for branch offices
+- **📡 ExpressRoute Integration** - Support for dedicated network connections via Azure ExpressRoute
 
 ### 🚀 Advanced Deployment
 
