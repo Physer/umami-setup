@@ -28,7 +28,7 @@ resource dnsPrivateResolver 'Microsoft.Network/dnsResolvers@2025-05-01' = {
   }
 }
 
-resource inEndpoint 'Microsoft.Network/dnsResolvers/inboundEndpoints@2022-07-01' = {
+resource inboundEndpoint 'Microsoft.Network/dnsResolvers/inboundEndpoints@2025-05-01' = {
   parent: dnsPrivateResolver
   name: 'in-endpoint'
   location: location
@@ -44,7 +44,7 @@ resource inEndpoint 'Microsoft.Network/dnsResolvers/inboundEndpoints@2022-07-01'
   }
 }
 
-resource outEndpoint 'Microsoft.Network/dnsResolvers/outboundEndpoints@2022-07-01' = {
+resource outboundEndpoint 'Microsoft.Network/dnsResolvers/outboundEndpoints@2025-05-01' = {
   parent: dnsPrivateResolver
   name: 'out-endpoint'
   location: location
