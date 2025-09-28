@@ -8,6 +8,7 @@ param appServicePlanSkuTier = 'Basic'
 param appServicePlanSkuSize = 'B1'
 param appServicePlanSkuFamily = 'B'
 param umamiDatabaseName = 'umami'
+param vpnAddressSpace = '172.16.0.0/24'
 
 // Environment-specific parameters
 param appServicePlanName = 'plan-analytics-${environment}'

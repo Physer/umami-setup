@@ -5,6 +5,7 @@ param virtualNetworkName string
 param subnetName string
 param virtualNetworkGatewayName string
 param publicIpName string
+param vpnAddressSpace string
 
 var microsoftRegisteredAudience = 'c632b3df-fb67-4d84-bdcf-b95ad541b5c8'
 var microsoftRegisteredIssuer = 'https://sts.windows.net/${tenantId}/'
@@ -52,7 +53,7 @@ resource vpnGateway 'Microsoft.Network/virtualNetworkGateways@2024-07-01' = {
     vpnClientConfiguration: {
       vpnClientAddressPool: {
         addressPrefixes: [
-          '172.16.0.0/24'
+          vpnAddressSpace
         ]
       }
       vpnClientProtocols: [

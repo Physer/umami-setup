@@ -15,6 +15,7 @@ param applicationInsightsName string
 param virtualNetworkGatewayPublicIpName string
 param virtualNetworkGatewayName string
 param dnsPrivateResolverName string
+param vpnAddressSpace string
 
 @secure()
 param databaseUsername string
@@ -62,6 +63,7 @@ module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
     subnetName: virtualNetwork.outputs.vpnSubnetName
     publicIpName: virtualNetworkGatewayPublicIpName
     virtualNetworkGatewayName: virtualNetworkGatewayName
+    vpnAddressSpace: vpnAddressSpace
   }
 }
 
