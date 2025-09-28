@@ -18,6 +18,7 @@ param applicationInsightsName = 'appi-analytics-${environment}'
 param logAnalyticsWorkspaceName = 'log-analytics-${environment}'
 param virtualNetworkGatewayPublicIpName = 'pip-vpn-analytics-${environment}'
 param virtualNetworkGatewayName = 'vgw-analytics-${environment}'
+param dnsPrivateResolverName = 'dnspr-analytics-${environment}'
 
 // Admin tools parameters
 param deployPgAdmin = true

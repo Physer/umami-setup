@@ -14,6 +14,7 @@ param logAnalyticsWorkspaceName string
 param applicationInsightsName string
 param virtualNetworkGatewayPublicIpName string
 param virtualNetworkGatewayName string
+param dnsPrivateResolverName string
 
 @secure()
 param databaseUsername string
@@ -28,18 +29,22 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
     applicationName: virtualNetworkName
   }
 }
-module privateDns 'modules/privatedns.bicep' = {
+
+module privateDns 'modules/privateDnsZone.bicep' = {
   name: 'deployPrivateDns'
   params: {
     postgresDatabaseResourceName: postgresServerName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
   }
 }
 
-module virtualNetworkLink 'modules/virtualNetworkLink.bicep' = {
-  name: 'deployVirtualNetworkLink'
+module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
+  name: 'deployDnsPrivateResolver'
   params: {
-    privateDnsZoneName: privateDns.outputs.resourceName
-    virtualNetworkId: virtualNetwork.outputs.resourceId
+    dnsResolverName: dnsPrivateResolverName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
+    inboundSubnetName: virtualNetwork.outputs.dnsPrivateResolverInboundSubnetName
+    outboundSubnetName: virtualNetwork.outputs.dnsPrivateResolverOutboundSubnetName
   }
 }
 
@@ -53,7 +58,7 @@ module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
 module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
   name: 'deployVpnGateway'
   params: {
-    virtualNetworkName: virtualNetworkName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
     subnetName: virtualNetwork.outputs.vpnSubnetName
     publicIpName: virtualNetworkGatewayPublicIpName
     virtualNetworkGatewayName: virtualNetworkGatewayName
@@ -72,7 +77,7 @@ module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   params: {
     resourceName: postgresServerName
-    virtualNetworkName: virtualNetworkName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
     postgresSubnetName: virtualNetwork.outputs.postgresSubnetName
     privateDnsZoneResourceId: privateDns.outputs.resourceId
     administratorUsername: databaseUsername
@@ -101,7 +106,7 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
     imageTag: 'postgresql-latest'
     appServiceName: umamiAppServiceName
     subnetName: virtualNetwork.outputs.appServiceSubnetName
-    virtualNetworkName: virtualNetworkName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
     appSettings: [
       {
         name: 'DATABASE_TYPE'
@@ -161,6 +166,6 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
     imageName: 'dpage/pgadmin4'
     imageTag: 'latest'
     subnetName: virtualNetwork.outputs.appServiceSubnetName
-    virtualNetworkName: virtualNetworkName
+    virtualNetworkName: virtualNetwork.outputs.resourceName
   }
 }
