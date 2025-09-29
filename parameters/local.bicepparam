@@ -26,10 +26,3 @@ param keyVaultPrivateEndpointName = 'pe-kv-analytics-${environment}'
 // Admin tools parameters
 param deployPgAdmin = true
 param pgAdminAppServiceName = 'app-pgadmin-${environment}'
-param pgAdminEmail = 'admin@local-analytics.com'
-param pgAdminPassword = 'g4MdT24B?HB)A1&b6r8n4Gi4'
-
-// Secure parameters
-param databaseUsername = 'psqladmin'
-param databasePassword = 'No%5`RB1vu,R3RM~OsN;24Sa'
-param appSecret = 'CxpBgns+9<S63&0@6}l@28<M'

@@ -8,8 +8,6 @@ param umamiDatabaseName string
 param virtualNetworkName string
 param deployPgAdmin bool
 param pgAdminAppServiceName string?
-param pgAdminEmail string?
-param pgAdminPassword string?
 param logAnalyticsWorkspaceName string
 param applicationInsightsName string
 param virtualNetworkGatewayPublicIpName string
@@ -19,12 +17,13 @@ param vpnAddressSpace string
 param keyVaultName string
 param keyVaultPrivateEndpointName string
 
-@secure()
-param databaseUsername string
-@secure()
-param databasePassword string
-@secure()
-param appSecret string
+// Key Vault secret names
+var databaseUsernameSecretName = 'postgresDatabaseUsername'
+var databasePasswordSecretName = 'postgresDatabasePassword'
+var databaseConnectionStringSecretName = 'postgresDatabaseConnectionString'
+var appSecretName = 'umamiAppSecret'
+var pgAdminEmailAddressSecretName = 'pgAdminEmailAddress'
+var pgAdminPasswordSecretName = 'pgAdminPassword'
 
 // Role Assignment Definitions
 var keyVaultSecretsUserRoleDefinitionId = '4633458b-17de-408a-b874-0445c86b69e6'
@@ -93,6 +92,11 @@ module keyVaultPrivateDnsARecord 'modules/privateDnsARecord.bicep' = {
   }
 }
 
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2024-12-01-preview' existing = {
+  name: keyVaultName
+  dependsOn: [keyVault]
+}
+
 // Application Insights and Azure Monitoring
 module monitoring 'modules/monitoring.bicep' = {
   name: 'deployMonitoring'
@@ -118,8 +122,8 @@ module postgresDatabase 'modules/postgres.bicep' = {
     virtualNetworkName: virtualNetwork.outputs.resourceName
     postgresSubnetName: virtualNetwork.outputs.postgresSubnetName
     privateDnsZoneResourceId: postgresDatabasePrivateDns.outputs.resourceId
-    administratorUsername: databaseUsername
-    administratorPassword: databasePassword
+    administratorUsername: keyVaultReference.getSecret(databaseUsernameSecretName)
+    administratorPassword: keyVaultReference.getSecret(databasePasswordSecretName)
     databaseName: umamiDatabaseName
     logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
@@ -153,11 +157,11 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
       }
       {
         name: 'DATABASE_URL'
-        value: 'postgresql://${databaseUsername}:${databasePassword}@${postgresDatabase.outputs.serverFqdn}/${umamiDatabaseName}'
+        value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${databaseConnectionStringSecretName})'
       }
       {
         name: 'APP_SECRET'
-        value: appSecret
+        value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${appSecretName})'
       }
       {
         name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -175,7 +179,7 @@ module umamiAppService 'modules/dockerAppService.bicep' = {
   }
 }
 
-module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin && !empty(pgAdminAppServiceName) && !empty(pgAdminEmail) && !empty(pgAdminPassword)) {
+module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin && !empty(pgAdminAppServiceName)) {
   name: 'deployPgAdminAppService'
   params: {
     appServiceName: pgAdminAppServiceName!
@@ -183,11 +187,11 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
     appSettings: [
       {
         name: 'PGADMIN_DEFAULT_EMAIL'
-        value: pgAdminEmail!
+        value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${pgAdminEmailAddressSecretName})'
       }
       {
         name: 'PGADMIN_DEFAULT_PASSWORD'
-        value: pgAdminPassword!
+        value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${pgAdminPasswordSecretName})'
       }
       {
         name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
