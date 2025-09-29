@@ -76,12 +76,28 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
         name: dnsPrivateResolverInboundSubnetName
         properties: {
           addressPrefix: '10.0.7.0/24'
+          delegations: [
+            {
+              name: 'dnsPrivateResolverInboundDelegation'
+              properties: {
+                serviceName: 'Microsoft.Network/dnsResolvers'
+              }
+            }
+          ]
         }
       }
       {
         name: dnsPrivateResolverOutboundSubnetName
         properties: {
           addressPrefix: '10.0.8.0/24'
+          delegations: [
+            {
+              name: 'dnsPrivateResolverOutboundDelegation'
+              properties: {
+                serviceName: 'Microsoft.Network/dnsResolvers'
+              }
+            }
+          ]
         }
       }
     ]
