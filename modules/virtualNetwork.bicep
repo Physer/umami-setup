@@ -5,6 +5,9 @@ param applicationName string
 var containerSubnetName = 'containerapp'
 var postgresSubnetName = 'postgres'
 var appServiceSubnetName = 'appservice'
+var vpnSubnetName = 'GatewaySubnet' // This name is required by Azure
+var dnsPrivateResolverInboundSubnetName = 'dnspr-inbound'
+var dnsPrivateResolverOutboundSubnetName = 'dnspr-outbound'
 var keyVaultSubnetName = 'keyvault'
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
@@ -58,6 +61,24 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
         }
       }
       {
+        name: vpnSubnetName
+        properties: {
+          addressPrefix: '10.0.6.0/24'
+        }
+      }
+      {
+        name: dnsPrivateResolverInboundSubnetName
+        properties: {
+          addressPrefix: '10.0.7.0/24'
+        }
+      }
+      {
+        name: dnsPrivateResolverOutboundSubnetName
+        properties: {
+          addressPrefix: '10.0.8.0/24'
+        }
+      }
+      {
         name: keyVaultSubnetName
         properties: {
           addressPrefix: '10.0.5.0/24'
@@ -68,7 +89,11 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
 }
 
 output resourceId string = virtualNetwork.id
+output resourceName string = virtualNetwork.name
 output postgresSubnetName string = postgresSubnetName
 output containerSubnetName string = containerSubnetName
 output appServiceSubnetName string = appServiceSubnetName
+output vpnSubnetName string = vpnSubnetName
+output dnsPrivateResolverInboundSubnetName string = dnsPrivateResolverInboundSubnetName
+output dnsPrivateResolverOutboundSubnetName string = dnsPrivateResolverOutboundSubnetName
 output keyVaultSubnetName string = keyVaultSubnetName
