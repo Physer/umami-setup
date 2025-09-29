@@ -37,14 +37,6 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
   }
 }
 
-module privateDns 'modules/privateDnsZone.bicep' = {
-  name: 'deployPrivateDns'
-  params: {
-    postgresDatabaseResourceName: postgresServerName
-    virtualNetworkName: virtualNetwork.outputs.resourceName
-  }
-}
-
 module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
   name: 'deployDnsPrivateResolver'
   params: {
@@ -84,6 +76,23 @@ module keyVault 'modules/keyVault.bicep' = {
   }
 }
 
+module keyVaultPrivateDns 'modules/privateDnsZone.bicep' = {
+  name: 'deployKeyVaultPrivateDns'
+  params: {
+    privateDnsZoneFqdn: 'privatelink.vaultcore.azure.net'
+    virtualNetworkName: virtualNetwork.outputs.resourceName
+  }
+}
+
+module keyVaultPrivateDnsARecord 'modules/privateDnsARecord.bicep' = {
+  name: 'deployKeyVaultPrivateDnsARecord'
+  params: {
+    privateDnsZoneFqdn: keyVaultPrivateDns.outputs.resourceName
+    networkInterfaceName: keyVault.outputs.privateEndpointNetworkInterfaceName
+    dnsRecordName: keyVaultName
+  }
+}
+
 // Application Insights and Azure Monitoring
 module monitoring 'modules/monitoring.bicep' = {
   name: 'deployMonitoring'
@@ -94,13 +103,21 @@ module monitoring 'modules/monitoring.bicep' = {
 }
 
 // Database
+module postgresDatabasePrivateDns 'modules/privateDnsZone.bicep' = {
+  name: 'deployPostgresDatabasePrivateDns'
+  params: {
+    privateDnsZoneFqdn: '${postgresServerName}.private.postgres.database.azure.com'
+    virtualNetworkName: virtualNetwork.outputs.resourceName
+  }
+}
+
 module postgresDatabase 'modules/postgres.bicep' = {
   name: 'deployPostgresDatabase'
   params: {
     resourceName: postgresServerName
     virtualNetworkName: virtualNetwork.outputs.resourceName
     postgresSubnetName: virtualNetwork.outputs.postgresSubnetName
-    privateDnsZoneResourceId: privateDns.outputs.resourceId
+    privateDnsZoneResourceId: postgresDatabasePrivateDns.outputs.resourceId
     administratorUsername: databaseUsername
     administratorPassword: databasePassword
     databaseName: umamiDatabaseName
