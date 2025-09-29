@@ -61,6 +61,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
         }
       }
       {
+        name: keyVaultSubnetName
+        properties: {
+          addressPrefix: '10.0.5.0/24'
+        }
+      }
+      {
         name: vpnSubnetName
         properties: {
           addressPrefix: '10.0.6.0/24'
@@ -76,12 +82,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-07-01' = {
         name: dnsPrivateResolverOutboundSubnetName
         properties: {
           addressPrefix: '10.0.8.0/24'
-        }
-      }
-      {
-        name: keyVaultSubnetName
-        properties: {
-          addressPrefix: '10.0.5.0/24'
         }
       }
     ]

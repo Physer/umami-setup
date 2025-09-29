@@ -76,7 +76,6 @@ module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
 // Key Vault
 module keyVault 'modules/keyVault.bicep' = {
   name: 'deployKeyVault'
-  scope: resourceGroup
   params: {
     keyVaultName: keyVaultName
     keyVaultPrivateEndpointName: keyVaultPrivateEndpointName
@@ -196,7 +195,6 @@ module pgAdminAppService 'modules/dockerAppService.bicep' = if (deployPgAdmin &&
 // Role Assignments
 module umamiAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = {
   name: 'deployUmamiAppServiceKeyVaultRoleAssignment'
-  scope: resourceGroup
   params: {
     keyVaultName: keyVaultName
     principalId: umamiAppService.outputs.principalId
@@ -206,28 +204,6 @@ module umamiAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRo
 
 module pgAdminAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = if (deployPgAdmin) {
   name: 'deployPgAdminAppServiceKeyVaultRoleAssignment'
-  scope: resourceGroup
-  params: {
-    keyVaultName: keyVaultName
-    principalId: pgAdminAppService!.outputs.principalId
-    roleDefinitionId: keyVaultSecretsUserRoleDefinitionId
-  }
-}
-
-// Role Assignments
-module umamiAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = {
-  name: 'deployUmamiAppServiceKeyVaultRoleAssignment'
-  scope: resourceGroup
-  params: {
-    keyVaultName: keyVaultName
-    principalId: umamiAppService.outputs.principalId
-    roleDefinitionId: keyVaultSecretsUserRoleDefinitionId
-  }
-}
-
-module pgAdminAppServiceKeyVaultRoleAssignment 'modules/roleAssignments/keyVaultRoleAssignment.bicep' = if (deployPgAdmin) {
-  name: 'deployPgAdminAppServiceKeyVaultRoleAssignment'
-  scope: resourceGroup
   params: {
     keyVaultName: keyVaultName
     principalId: pgAdminAppService!.outputs.principalId
