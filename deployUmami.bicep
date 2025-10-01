@@ -16,6 +16,7 @@ param dnsPrivateResolverName string
 param vpnAddressSpace string
 param keyVaultName string
 param keyVaultPrivateEndpointName string
+param deployVpnGateway bool
 
 // Key Vault secret names
 var databaseUsernameSecretName = 'postgresDatabaseUsername'
@@ -36,7 +37,7 @@ module virtualNetwork './modules/virtualNetwork.bicep' = {
   }
 }
 
-module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
+module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = if (deployVpnGateway) {
   name: 'deployDnsPrivateResolver'
   params: {
     dnsResolverName: dnsPrivateResolverName
@@ -46,14 +47,14 @@ module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
   }
 }
 
-module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
+module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = if (deployVpnGateway) {
   name: 'deployVpnPublicIp'
   params: {
     publicIpName: virtualNetworkGatewayPublicIpName
   }
 }
 
-module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
+module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = if (deployVpnGateway) {
   name: 'deployVpnGateway'
   params: {
     virtualNetworkName: virtualNetwork.outputs.resourceName
