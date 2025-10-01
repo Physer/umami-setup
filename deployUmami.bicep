@@ -16,6 +16,7 @@ param virtualNetworkGatewayPublicIpName string
 param virtualNetworkGatewayName string
 param dnsPrivateResolverName string
 param vpnAddressSpace string
+param deployVpnGateway bool
 
 @secure()
 param databaseUsername string
@@ -39,7 +40,7 @@ module privateDns 'modules/privateDnsZone.bicep' = {
   }
 }
 
-module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
+module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = if (deployVpnGateway) {
   name: 'deployDnsPrivateResolver'
   params: {
     dnsResolverName: dnsPrivateResolverName
@@ -49,14 +50,14 @@ module dnsPrivateResolver 'modules/dnsPrivateResolver.bicep' = {
   }
 }
 
-module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = {
+module virtualNetworkGatewayPublicIp 'modules/publicIp.bicep' = if (deployVpnGateway) {
   name: 'deployVpnPublicIp'
   params: {
     publicIpName: virtualNetworkGatewayPublicIpName
   }
 }
 
-module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
+module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = if (deployVpnGateway) {
   name: 'deployVpnGateway'
   params: {
     virtualNetworkName: virtualNetwork.outputs.resourceName
@@ -65,6 +66,9 @@ module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = {
     virtualNetworkGatewayName: virtualNetworkGatewayName
     vpnAddressSpace: vpnAddressSpace
   }
+  dependsOn: [
+    virtualNetworkGatewayPublicIp
+  ]
 }
 
 module monitoring 'modules/monitoring.bicep' = {
