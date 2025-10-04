@@ -14,6 +14,9 @@ param logAnalyticsWorkspaceName string
 param applicationInsightsName string
 param virtualNetworkGatewayPublicIpName string
 param virtualNetworkGatewayName string
+param virtualNetworkGatewaySkuName string
+param virtualNetworkGatewayProtocolNames string[]
+param virtualNetworkGatewayAuthenticationTypes string[]
 param dnsPrivateResolverName string
 param vpnAddressSpace string
 param deployVpnGateway bool
@@ -65,6 +68,9 @@ module virtualNetworkGateway 'modules/virtualNetworkGateway.bicep' = if (deployV
     publicIpName: virtualNetworkGatewayPublicIpName
     virtualNetworkGatewayName: virtualNetworkGatewayName
     vpnAddressSpace: vpnAddressSpace
+    skuName: virtualNetworkGatewaySkuName
+    protocolNames: virtualNetworkGatewayProtocolNames
+    authenticationTypes: virtualNetworkGatewayAuthenticationTypes
   }
   dependsOn: [
     virtualNetworkGatewayPublicIp

@@ -1,6 +1,8 @@
 param location string = resourceGroup().location
 param tenantId string = subscription().tenantId
-param skuName string = 'VpnGw1AZ'
+param skuName string
+param protocolNames string[]
+param authenticationTypes string[]
 param virtualNetworkName string
 param subnetName string
 param virtualNetworkGatewayName string
@@ -57,11 +59,14 @@ resource vpnGateway 'Microsoft.Network/virtualNetworkGateways@2024-07-01' = {
           vpnAddressSpace
         ]
       }
-      vpnClientProtocols: [
-        'OpenVPN'
-      ]
-      vpnAuthenticationTypes: [
-        'AAD'
+      vpnClientProtocols: protocolNames
+      vpnAuthenticationTypes: authenticationTypes
+      vpnClientRootCertificates: [
+        {
+          properties: {
+            publicCertData: 'TODO'
+          }
+        }
       ]
       aadAudience: microsoftRegisteredAudience
       aadIssuer: microsoftRegisteredIssuer

@@ -11,6 +11,13 @@ param vpnAddressSpace = '172.16.0.0/24'
 param appServicePlanSkuTier = 'Basic'
 param appServicePlanSkuSize = 'B1'
 param appServicePlanSkuFamily = 'B'
+param virtualNetworkGatewaySkuName = 'Basic'
+param virtualNetworkGatewayProtocolNames = [
+  'SSTP'
+]
+param virtualNetworkGatewayAuthenticationTypes = [
+  'Certificate'
+]
 param appServicePlanName = 'plan-analytics-${environment}'
 param umamiAppServiceName = 'app-umami-${environment}'
 param postgresServerName = 'psql-umami-${environment}'
@@ -20,7 +27,7 @@ param logAnalyticsWorkspaceName = 'log-analytics-${environment}'
 param virtualNetworkGatewayPublicIpName = 'pip-vpn-analytics-${environment}'
 param virtualNetworkGatewayName = 'vgw-analytics-${environment}'
 param dnsPrivateResolverName = 'dnspr-analytics-${environment}'
-param deployVpnGateway = false
+param deployVpnGateway = true
 
 // Admin tools parameters
 param deployPgAdmin = true
